@@ -6,20 +6,20 @@ except ImportError:
     apps.ready = True
 from django.conf import settings
 from django.core.exceptions import ImproperlyConfigured
-from django.db.models.loading import get_app, get_models, get_model, load_app
+from django.apps import apps#get_app, get_models, get_model, load_app
 
 
 def get_all_models(app):
     try:
-        app_mod = load_app(app)  # First try full path
+        app_mod = apps.load_app(app)  # First try full path
     except ImportError:
-        app_mod = get_app(app)  # Then try just app_label
-    return get_models(app_mod)
+        app_mod = apps.get_app(app)  # Then try just app_label
+    return apps.get_models(app_mod)
 
 
 def gel_listed_models(app, l):
     def parse(model):
-        m = get_model(app, model)
+        m = apps.get_model(app, model)
         if m is None:
             raise ImproperlyConfigured(
                 'SYNCHRO_MODELS: Model %s not found in %s app.' % (model, app))

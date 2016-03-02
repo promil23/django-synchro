@@ -163,6 +163,8 @@ def ensure_exist(ct, id):
     """
     obj = ct.get_object_for_this_type(pk=id)
     rem, ref = find_ref(ct, obj.pk)
+    print('ct: {} obj: {}'.format(ct, obj.pk))
+    print('rem: {} ref: {}'.format(rem, ref))
     if rem is not None:
         return rem, ref
     rem = find_natural(ct, obj)
