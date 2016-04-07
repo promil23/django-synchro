@@ -79,6 +79,8 @@ def save_with_fks(ct, obj, new_pk):
             f.save_form_data(obj, rem)
 
     obj.pk = new_pk
+    #print('save obj_title: {}, obj.content: {}, obj.site: {}, obj.user: {}, REMOTE: {}'.format(obj.title, obj.content, obj.site, obj.user, REMOTE))
+    print('save obj: {} {}'.format(obj, type(obj)))
     obj.save(using=REMOTE)
     r, n = Reference.objects.get_or_create(content_type=ct, local_object_id=old_id,
                                            defaults={'remote_object_id': obj.pk})
@@ -163,8 +165,8 @@ def ensure_exist(ct, id):
     """
     obj = ct.get_object_for_this_type(pk=id)
     rem, ref = find_ref(ct, obj.pk)
-    print('ct: {} obj: {}'.format(ct, obj.pk))
-    print('rem: {} ref: {}'.format(rem, ref))
+    #print('ct: {} obj: {}'.format(ct, obj.pk))
+    #print('rem: {} ref: {}'.format(rem, ref))
     if rem is not None:
         return rem, ref
     rem = find_natural(ct, obj)
@@ -177,6 +179,7 @@ def ensure_exist(ct, id):
 def perform_add(ct, id, log=None):
     obj = ct.get_object_for_this_type(pk=id)
     rem = find_natural(ct, obj)
+    #print('perform_add id: {}, obj: {}, rem: {}'.format(id, obj, rem))
     if rem is not None:
         if not is_remote_newer(obj, rem):
             change_with_fks(ct, obj, rem)
@@ -187,12 +190,14 @@ def perform_add(ct, id, log=None):
         rem = obj
     ref, _ = Reference.objects.get_or_create(content_type=ct, local_object_id=id,
                                              remote_object_id=rem.pk)
+    #print('add      rem: {}, ref: {}'.format(rem, ref))
     return rem, ref
 
 
 def perform_chg(ct, id, log=None):
     obj = ct.get_object_for_this_type(pk=id)
     rem, ref = find_ref(ct, obj.pk)
+    #print('{}, {}, {}'.format(obj, rem, ref))
     if rem is not None:
         return change_with_fks(ct, obj, rem)
     rem = find_natural(ct, obj)
